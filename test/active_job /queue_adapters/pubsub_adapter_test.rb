@@ -9,7 +9,7 @@ class PubsubAdapterTest < Minitest::Test
     @client = Minitest::Mock.new
     @adapter.enqueued_jobs = []
     Rails.application.config.pubsub_client = @client
-    @client.expect(:publish, true, [@job.class.to_s])
+    @client.expect(:publish, true, [String])
   end
 
   def test_that_enqueues_job

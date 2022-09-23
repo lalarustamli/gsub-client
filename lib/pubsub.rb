@@ -71,7 +71,8 @@ class Pubsub
 
   # Execute relevant job
   def execute_job(job)
-    job.constantize.send(:perform_now)
+    job = JSON.parse(job)
+    job["job"].constantize.send(:perform_now, job["args"])
   rescue StandardError => e
     puts("Couldn't enqueue job", e)
   end

@@ -11,7 +11,7 @@ module ActiveJob
       def enqueue(job)
         puts("Enqueing job #{job.inspect}")
         job_data = job_to_hash(job)
-        perform(job, job_data)
+        perform(job_data)
       end
 
       # Enqueue a job to be performed at a certain time.
@@ -42,9 +42,9 @@ module ActiveJob
         end.merge(extras)
       end
 
-      def perform(job, job_data)
+      def perform(job_data)
         enqueued_jobs << job_data
-        payload = job.class.to_s
+        payload = JSON.dump(job_data)
         Rails.application.config.pubsub_client.publish(payload)
       end
     end
