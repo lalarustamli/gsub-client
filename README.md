@@ -25,3 +25,23 @@ $ docker compose run --rm web bin/rails console
 ```
 
 If you run docker with a VM (e.g. Docker Desktop for Mac) we recommend you allocate at least 2GB Memory
+
+## Changes
+
+1. The configured adapter([lib/active_job/queue_adapters/pubsub_adapter.rb](lib/active_job/queue_adapters/pubsub_adapter.rb)) is able to enqueue and enqueue at given timestamp to Google Pubsub.
+2. A subscriber task ([lib/tasks/subscriber.rake](lib/tasks/subscriber.rake)) listens to Google Pub/Sub and executes relevant jobs.
+3. Some example jobs are provided in ([jobs](app/jobs/hello_kisi_job.rb)) that gets retried at most 2 times, 5 minutes apart. If failed, forwards to `morgue`. The approach leads to `at_least_once`.
+
+How to run:
+1. Run all services in Docker
+```
+$ docker compose up
+```
+2. Create some load
+```
+$ docker compose run --rm web bin/rails console
+HelloKisiJob.set(wait: 5.seconds).perform_later
+HelloKisiJob.set(wait: 1.seconds).perform_later
+HelloKisiJob.perform_later
+...
+```
